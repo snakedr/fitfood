@@ -1,20 +1,20 @@
 ---
-export interface Props {
+interface Props {
   name: string;
+  type: string;
   kcal: number;
   p: number;
   f: number;
   c: number;
   img: string;
-  type: string;
 }
-const { name, kcal, p, f, c, img, type } = Astro.props;
----
 
+const { name, kcal, p, f, c, img } = Astro.props;
+---
 <div class="meal">
-  <img src={img} alt={name} onclick="openLightbox(this.src)" />
-  <div>
-    <h3>{name}</h3>
-    <p>{kcal} ккал • Б:{p} Ж:{f} У:{c}</p>
-  </div>
+  <img src={img} onclick={`openLightbox('${img}')`} alt={name}>
+  <div>
+    <h3>{name}</h3>
+    <p>{kcal} ккал • Б:{p} Ж:{f} У:{c}</p>
+  </div>
 </div>
