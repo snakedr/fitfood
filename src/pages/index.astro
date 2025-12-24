@@ -1,7 +1,6 @@
 ---
 // Фронтматтер (SSR/SSG контекст)
-import styles from "../styles/global.css";
-// ИСПРАВЛЕНО: относительные пути
+import styles from '../styles/global.css'; // ИСПРАВЛЕНО: Относительный путь для стилей
 import MealCard from '../components/MealCard.astro'; 
 import CalorieCalculator from '../components/CalorieCalculator.astro'; 
 import Lightbox from '../components/Lightbox.astro'; 
@@ -17,7 +16,7 @@ const mealsData = [
     c: 30,
     img: "/images/sport-free.webp"
   }
-]; // <-- ИСПРАВЛЕНИЕ: закрывающая скобка массива присутствует
+]; 
 ---
 
 <!DOCTYPE html>
@@ -27,8 +26,7 @@ const mealsData = [
     <title>FitFood — минимализм и фитнес</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/src/styles/global.css" />
-  </head>
+      </head>
   <body>
     
     <script id="meal-data" type="application/json">
@@ -36,7 +34,26 @@ const mealsData = [
     </script>
 
     <header id="hero" style="background-image: url('/images/hero-free.webp')">
-// ... (остальной HTML)
+      <h1>Еда для формы</h1>
+      <p>Минимализм. Фитнес. Контроль калорий.</p>
+      <button class="btn" onclick="scrollToCalc()">Рассчитать калории</button>
+    </header>
+
+    <section id="calc">
+      <h2 style="text-align:center;margin-bottom:20px">🧮 Калькулятор калорий</h2>
+      <CalorieCalculator />
+    </section>
+
+    <section>
+      <h2 style="text-align:center;margin-bottom:20px">🍽️ Блюда</h2>
+
+      <div class="filters">
+        <button class="btn" onclick="filterMeals('all')">Все</button>
+        <button class="btn" onclick="filterMeals('protein')">Белок</button>
+        <button class="btn" onclick="filterMeals('vegan')">Веган</button>
+        <button class="btn" onclick="filterMeals('lowcarb')">Low-Carb</button>
+      </div>
+
       <div class="meals" id="meals">
         {mealsData.map(meal => (
           <MealCard {...meal} />
@@ -49,17 +66,28 @@ const mealsData = [
     <Lightbox />
 
     <script>
-      // ИЗМЕНЕНИЕ: Безопасное получение данных с клиента
+      // Получение данных
       const mealsData = JSON.parse(document.getElementById('meal-data').textContent);
 
       const mealsEl = document.getElementById("meals");
 
       function renderMeals(type = "all") {
         mealsEl.innerHTML = "";
-// ... (остальной JS код без изменений)
-      }
+        mealsData.forEach(m => {
+          if (type !== "all" && m.type !== type) return;
 
-      renderMeals();
+          const card = document.createElement("div");
+          card.className = "meal";
+          card.innerHTML = `
+            <img src="${m.img}" onclick="openLightbox('${m.img}')">
+            <div>
+              <h3>${m.name}</h3>
+              <p>${m.kcal} ккал • Б:${m.p} Ж:${m.f} У:${m.c}</p>
+            </div>
+          `;
+          mealsEl.appendChild(card);
+        });
+      }
 
       function filterMeals(type) {
         renderMeals(type);
@@ -67,7 +95,17 @@ const mealsData = [
 
       /* CALCULATOR */
       function calc() {
-// ...
+        const w = +document.getElementById("w").value;
+        const h = +document.getElementById("h").value;
+        const a = +document.getElementById("a").value;
+        const r = document.getElementById("res");
+
+        if (!w || !h || !a) {
+          r.innerText = "Заполни все поля";
+          return;
+        }
+
+        r.innerText = `≈ ${Math.round((10 * w + 6.25 * h - 5 * a + 5) * 1.55)} ккал / день`;
       }
 
       function scrollToCalc() {
