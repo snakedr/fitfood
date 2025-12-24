@@ -1,195 +1,160 @@
 ---
+// Фронтматтер (SSR/SSG контекст)
 import styles from "@/styles/global.css";
 import MealCard from '@/components/MealCard.astro';
 import CalorieCalculator from '@/components/CalorieCalculator.astro';
 import Lightbox from '@/components/Lightbox.astro';
----
+
+// Исходные данные. Используются для SSR рендеринга MealCard.
 const mealsData = [
-  {
-    name: "Курица + овощи",
-    type: "protein",
-    kcal: 420,
-    p: 42,
-    f: 8,
-    c: 20,
-    img: "/images/chicken-free.webp"
-  },
-  {
-    name: "Веган боул",
-    type: "vegan",
-    kcal: 360,
-    p: 18,
-    f: 12,
-    c: 45,
-    img: "/images/vegan-free.webp"
-  },
-  {
-    name: "Лосось + овощи",
-    type: "lowcarb",
-    kcal: 390,
-    p: 34,
-    f: 26,
-    c: 8,
-    img: "/images/salmon-free.webp"
-  },
-  {
-    name: "Фитнес-питание",
-    type: "protein",
-    kcal: 450,
-    p: 35,
-    f: 15,
-    c: 30,
-    img: "/images/sport-free.webp"
-  }
-];
+  {
+    name: "Курица + овощи",
+    type: "protein",
+    kcal: 420,
+    p: 42,
+    f: 8,
+    c: 20,
+    img: "/images/chicken-free.webp"
+  },
+  {
+    name: "Веган боул",
+    type: "vegan",
+    kcal: 360,
+    p: 18,
+    f: 12,
+    c: 45,
+    img: "/images/vegan-free.webp"
+  },
+  {
+    name: "Лосось + овощи",
+    type: "lowcarb",
+    kcal: 390,
+    p: 34,
+    f: 26,
+    c: 8,
+    img: "/images/salmon-free.webp"
+  },
+  {
+    name: "Фитнес-питание",
+    type: "protein",
+    kcal: 450,
+    p: 35,
+    f: 15,
+    c: 30,
+    img: "/images/sport-free.webp"
+  }
+]; // <-- ИСПРАВЛЕНИЕ: Добавлена закрывающая квадратная скобка
 ---
 
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8">
-    <title>FitFood — минимализм и фитнес</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/src/styles/global.css" />
-  </head>
-  <body>
+  <head>
+    <meta charset="UTF-8">
+    <title>FitFood — минимализм и фитнес</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/styles/global.css" />
+  </head>
+  <body>
 
-    <header id="hero" style="background-image: url('/images/hero-free.webp')">
-      <h1>Еда для формы</h1>
-      <p>Минимализм. Фитнес. Контроль калорий.</p>
-      <button class="btn" onclick="scrollToCalc()">Рассчитать калории</button>
-    </header>
+    <header id="hero" style="background-image: url('/images/hero-free.webp')">
+      <h1>Еда для формы</h1>
+      <p>Минимализм. Фитнес. Контроль калорий.</p>
+      <button class="btn" onclick="scrollToCalc()">Рассчитать калории</button>
+    </header>
 
-    <section id="calc">
-      <h2 style="text-align:center;margin-bottom:20px">🧮 Калькулятор калорий</h2>
-      <CalorieCalculator />
-    </section>
+    <section id="calc">
+      <h2 style="text-align:center;margin-bottom:20px">🧮 Калькулятор калорий</h2>
+      <CalorieCalculator />
+    </section>
 
-    <section>
-      <h2 style="text-align:center;margin-bottom:20px">🍽️ Блюда</h2>
+    <section>
+      <h2 style="text-align:center;margin-bottom:20px">🍽️ Блюда</h2>
 
-      <div class="filters">
-        <button class="btn" onclick="filterMeals('all')">Все</button>
-        <button class="btn" onclick="filterMeals('protein')">Белок</button>
-        <button class="btn" onclick="filterMeals('vegan')">Веган</button>
-        <button class="btn" onclick="filterMeals('lowcarb')">Low-Carb</button>
-      </div>
+      <div class="filters">
+        <button class="btn" onclick="filterMeals('all')">Все</button>
+        <button class="btn" onclick="filterMeals('protein')">Белок</button>
+        <button class="btn" onclick="filterMeals('vegan')">Веган</button>
+        <button class="btn" onclick="filterMeals('lowcarb')">Low-Carb</button>
+      </div>
 
-      <div class="meals" id="meals">
-        {mealsData.map(meal => (
-          <MealCard {...meal} />
-        ))}
-      </div>
-    </section>
+      <div class="meals" id="meals">
+        {mealsData.map(meal => (
+          <MealCard {...meal} />
+        ))}
+      </div>
+    </section>
 
-    <footer>© 2025 FitFood</footer>
+    <footer>© 2025 FitFood</footer>
 
-    <Lightbox />
+    <Lightbox />
 
-    <script>
-      /* DATA */
-      const mealsData = [
-        {
-          name: "Курица + овощи",
-          type: "protein",
-          kcal: 420,
-          p: 42,
-          f: 8,
-          c: 20,
-          img: "/images/chicken-free.webp"
-        },
-        {
-          name: "Веган боул",
-          type: "vegan",
-          kcal: 360,
-          p: 18,
-          f: 12,
-          c: 45,
-          img: "/images/vegan-free.webp"
-        },
-        {
-          name: "Лосось + овощи",
-          type: "lowcarb",
-          kcal: 390,
-          p: 34,
-          f: 26,
-          c: 8,
-          img: "/images/salmon-free.webp"
-        },
-        {
-          name: "Фитнес-питание",
-          type: "protein",
-          kcal: 450,
-          p: 35,
-          f: 15,
-          c: 30,
-          img: "/images/sport-free.webp"
-        }
-      ];
+    <script>
+      // ОПТИМИЗАЦИЯ: Внедрение данных из фронтматтера для клиентского JS
+      const mealsData = ${JSON.stringify(mealsData)};
 
-      const mealsEl = document.getElementById("meals");
+      const mealsEl = document.getElementById("meals");
 
-      function renderMeals(type = "all") {
-        mealsEl.innerHTML = "";
-        mealsData.forEach(m => {
-          if (type !== "all" && m.type !== type) return;
+      function renderMeals(type = "all") {
+        mealsEl.innerHTML = "";
+        mealsData.forEach(m => {
+          if (type !== "all" && m.type !== type) return;
 
-          const card = document.createElement("div");
-          card.className = "meal";
-          card.innerHTML = `
-            <img src="${m.img}" onclick="openLightbox('${m.img}')">
-            <div>
-              <h3>${m.name}</h3>
-              <p>${m.kcal} ккал • Б:${m.p} Ж:${m.f} У:${m.c}</p>
-            </div>
-          `;
-          mealsEl.appendChild(card);
-        });
-      }
+          const card = document.createElement("div");
+          card.className = "meal";
+          card.innerHTML = `
+            <img src="${m.img}" onclick="openLightbox('${m.img}')">
+            <div>
+              <h3>${m.name}</h3>
+              <p>${m.kcal} ккал • Б:${m.p} Ж:${m.f} У:${m.c}</p>
+            </div>
+          `;
+          mealsEl.appendChild(card);
+        });
+      }
 
-      renderMeals();
+      renderMeals();
 
-      function filterMeals(type) {
-        renderMeals(type);
-      }
+      function filterMeals(type) {
+        renderMeals(type);
+      }
 
-      /* CALCULATOR */
-      function calc() {
-        const w = +document.getElementById("w").value;
-        const h = +document.getElementById("h").value;
-        const a = +document.getElementById("a").value;
-        const r = document.getElementById("res");
+      /* CALCULATOR */
+      function calc() {
+        const w = +document.getElementById("w").value;
+        const h = +document.getElementById("h").value;
+        const a = +document.getElementById("a").value;
+        const r = document.getElementById("res");
 
-        if (!w || !h || !a) {
-          r.innerText = "Заполни все поля";
-          return;
-        }
+        if (!w || !h || !a) {
+          r.innerText = "Заполни все поля";
+          return;
+        }
 
-        r.innerText = `≈ ${Math.round((10 * w + 6.25 * h - 5 * a + 5) * 1.55)} ккал / день`;
-      }
+        r.innerText = `≈ ${Math.round((10 * w + 6.25 * h - 5 * a + 5) * 1.55)} ккал / день`;
+      }
 
-      function scrollToCalc() {
-        document.getElementById("calc").scrollIntoView({ behavior: "smooth" });
-      }
+      function scrollToCalc() {
+        document.getElementById("calc").scrollIntoView({ behavior: "smooth" });
+      }
 
-      /* LIGHTBOX */
-      const lightbox = document.getElementById("lightbox");
-      const lightboxImg = document.getElementById("lightboxImg");
+      /* LIGHTBOX */
+      const lightbox = document.getElementById("lightbox");
+      const lightboxImg = document.getElementById("lightboxImg");
 
-      function openLightbox(src) {
-        lightboxImg.src = src;
-        lightbox.classList.add("active");
-      }
+      function openLightbox(src) {
+        lightboxImg.src = src;
+        lightbox.classList.add("active");
+      }
 
-      function closeLightbox() {
-        lightbox.classList.remove("active");
-        lightboxImg.src = "";
-      }
+      function closeLightbox() {
+        lightbox.classList.remove("active");
+        lightboxImg.src = "";
+      }
 
-      document.addEventListener("keydown", e => {
-        if (e.key === "Escape") closeLightbox();
-      });
-    </script>
-  </body>
+      document.addEventListener("keydown", e => {
+        if (e.key === "Escape") closeLightbox();
+      });
+    </script>
+  </body>
 </html>
