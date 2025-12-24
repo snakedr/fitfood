@@ -1,11 +1,11 @@
 ---
 // Фронтматтер (SSR/SSG контекст)
-import '../styles/global.css'; // Импорт стилей
+// Импорты компонентов
 import MealCard from '../components/MealCard.astro'; 
 import CalorieCalculator from '../components/CalorieCalculator.astro'; 
 import Lightbox from '../components/Lightbox.astro'; 
 
-// Данные для SSR (используются только здесь)
+// Данные для SSR (статически рендерим карточки)
 const mealsData = [
  {
   name:"Курица + овощи", type:"protein", kcal:420,p:42,f:8,c:20, img:"/images/chicken-free.webp"
@@ -29,6 +29,129 @@ const mealsData = [
 <title>FitFood — минимализм и фитнес</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0e1014;
+  --card:#161a20;
+  --accent:#3cff8f;
+  --text:#ffffff;
+  --muted:#9aa0aa;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,sans-serif}
+body{background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* HERO */
+header{
+  min-height:100vh;
+  padding:80px 20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:center;
+  background-size:cover;
+  background-position:center;
+}
+
+h1{font-size:clamp(28px,6vw,48px);margin-bottom:12px}
+p{color:var(--muted);max-width:520px;margin:0 auto 24px}
+
+.btn{
+  background:var(--accent);
+  color:#000;
+  border:none;
+  padding:14px 26px;
+  border-radius:40px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* SECTIONS */
+section{padding:64px 16px;max-width:1100px;margin:auto}
+
+/* CALCULATOR */
+.calc{
+  background:var(--card);
+  border-radius:18px;
+  max-width:420px;
+  margin:auto;
+  padding:24px;
+}
+
+.calc input{
+  width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  background:#0b0e13;
+  border:none;
+  border-radius:10px;
+  color:#fff;
+}
+
+.result{text-align:center;color:var(--accent);font-weight:600}
+
+/* MEALS */
+.meals{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;
+}
+
+.meal{
+  background:var(--card);
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.meal img{
+  width:100%;
+  height:170px;
+  object-fit:cover;
+  cursor:zoom-in;
+  transition:transform .3s;
+}
+
+.meal img:hover{
+  transform:scale(1.03);
+}
+
+.meal div{padding:16px}
+.meal h3{font-size:16px;margin-bottom:6px}
+.meal p{font-size:14px;color:var(--muted)}
+
+footer{text-align:center;padding:40px;color:var(--muted)}
+
+/* LIGHTBOX */
+.lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.lightbox.active{
+  display:flex;
+}
+
+.lightbox img{
+  max-width:95vw;
+  max-height:95vh;
+  object-fit:contain;
+}
+
+.lightbox .close{
+  position:absolute;
+  top:20px;
+  right:24px;
+  font-size:28px;
+  color:#fff;
+  cursor:pointer;
+}
+</style>
 </head>
 
 <body>
@@ -59,7 +182,7 @@ const mealsData = [
 <Lightbox />
 
 <script>
-// В JS оставлены только чистые функции без лишней логики
+// ТОЛЬКО МИНИМАЛЬНЫЙ КЛИЕНТСКИЙ JS (Калькулятор и Lightbox)
 /* CALCULATOR */
 function calc(){
   const w=+document.getElementById("w").value;
@@ -69,7 +192,6 @@ function calc(){
 
   if(!w||!h||!a){r.innerText="Заполни все поля";return;}
 
-  // Формула Миффлина - Сан-Жеора для мужчин (умноженная на низкую активность 1.55)
   r.innerText=`≈ ${Math.round((10*w+6.25*h-5*a+5)*1.55)} ккал / день`;
 }
 
