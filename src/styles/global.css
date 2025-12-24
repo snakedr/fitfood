@@ -1,10 +1,6 @@
-
 ---
-
-### 📁 `src/styles/global.css`
-
-(тот же CSS, что и в HTML)
-
+import "@/styles/global.css";
+---
 ```css
 :root{
   --bg:#0e1014;
