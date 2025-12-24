@@ -1,10 +1,22 @@
 ---
 // Фронтматтер
-// Импортируем только компоненты-контейнеры, CalorieCalculator и Lightbox
 import CalorieCalculator from '../components/CalorieCalculator.astro'; 
 import Lightbox from '../components/Lightbox.astro'; 
 
-// Данные mealsData УДАЛЕНЫ, так как используем чистый HTML
+// 1. ИМПОРТ ФОТО ЧЕРЕЗ ASTRO.GLOB (Требует перемещения фото в /src/assets/images)
+// Это гарантирует, что Vite пропишет правильные пути к изображениям.
+const imageImports = await Astro.glob('../assets/images/*.webp');
+
+// 2. СТРУКТУРА ДАННЫХ С ГАРАНТИРОВАННЫМИ ПУТЯМИ ОТ VITE
+const mealsData = [
+ { name:"Курица + овощи", kcal:420,p:42,f:8,c:20, img: imageImports.find(img => img.default.includes('chicken-free'))?.default || '' },
+ { name:"Веган боул", kcal:360,p:18,f:12,c:45, img: imageImports.find(img => img.default.includes('vegan-free'))?.default || '' },
+ { name:"Лосось + овощи", kcal:390,p:34,f:26,c:8, img: imageImports.find(img => img.default.includes('salmon-free'))?.default || '' },
+ { name:"Фитнес-питание", kcal:450,p:35,f:15,c:30, img: imageImports.find(img => img.default.includes('sport-free'))?.default || '' }
+];
+
+// Отдельно находим фоновое фото для хедера
+const heroImage = imageImports.find(img => img.default.includes('hero-free'))?.default || '';
 ---
 
 <!DOCTYPE html>
@@ -141,7 +153,7 @@ footer{text-align:center;padding:40px;color:var(--muted)}
 
 <body>
 
-<header id="hero" style="background-image:url(images/hero-free.webp)"> 
+<header id="hero" style={`background-image:url(${heroImage})`}> 
   <h1>Еда для формы</h1>
   <p>Минимализм. Фитнес. Контроль калорий.</p>
   <button class="btn" onclick="scrollToCalc()">Рассчитать калории</button>
@@ -156,37 +168,15 @@ footer{text-align:center;padding:40px;color:var(--muted)}
 <h2 style="text-align:center;margin-bottom:20px">🍽️ Блюда</h2>
 
 <div class="meals" id="meals">
+    {mealsData.map(meal => (
     <div class="meal">
-    <img src="images/chicken-free.webp" onclick="openLightbox('images/chicken-free.webp')" alt="Курица + овощи">
-        <div>
-      <h3>Курица + овощи</h3>
-      <p>420 ккал • Б:42 Ж:8 У:20</p>
+      <img src={meal.img} onclick={`openLightbox('${meal.img}')`} alt={meal.name}>
+      <div>
+        <h3>{meal.name}</h3>
+        <p>{meal.kcal} ккал • Б:{meal.p} Ж:{meal.f} У:{meal.c}</p>
+      </div>
     </div>
-  </div>
-
-  <div class="meal">
-    <img src="images/vegan-free.webp" onclick="openLightbox('images/vegan-free.webp')" alt="Веган боул">
-        <div>
-      <h3>Веган боул</h3>
-      <p>360 ккал • Б:18 Ж:12 У:45</p>
-    </div>
-  </div>
-
-  <div class="meal">
-    <img src="images/salmon-free.webp" onclick="openLightbox('images/salmon-free.webp')" alt="Лосось + овощи">
-        <div>
-      <h3>Лосось + овощи</h3>
-      <p>390 ккал • Б:34 Ж:26 У:8</p>
-    </div>
-  </div>
-
-  <div class="meal">
-    <img src="images/sport-free.webp" onclick="openLightbox('images/sport-free.webp')" alt="Фитнес-питание">
-        <div>
-      <h3>Фитнес-питание</h3>
-      <p>450 ккал • Б:35 Ж:15 У:30</p>
-    </div>
-  </div>
+  ))}
 </div>
 </section>
 
@@ -195,7 +185,7 @@ footer{text-align:center;padding:40px;color:var(--muted)}
 <Lightbox />
 
 <script>
-// ТОЛЬКО МИНИМАЛЬНЫЙ КЛИЕНТСКИЙ JS (Калькулятор и Lightbox)
+// ТОЛЬКО МИНИМАЛЬНЫЙ КЛИЕНТСКИЙ JS
 /* CALCULATOR */
 function calc(){
   const w=+document.getElementById("w").value;
