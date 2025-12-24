@@ -1,55 +1,239 @@
 ---
-// Фронтматтер
-import CalorieCalculator from '../components/CalorieCalculator.astro'; 
-import Lightbox from '../components/Lightbox.astro'; 
-
-// 1. ПРЯМОЙ СТАТИЧЕСКИЙ ИМПОРТ ИЗОБРАЖЕНИЙ
-// Это самый чистый способ получить правильный путь от Vite.
-import chickenImg from '../assets/images/chicken-free.webp';
-import veganImg from '../assets/images/vegan-free.webp';
-import salmonImg from '../assets/images/salmon-free.webp';
-import sportImg from '../assets/images/sport-free.webp';
-import heroImg from '../assets/images/hero-free.webp';
-
-// 2. СТРУКТУРА ДАННЫХ
-const mealsData = [
- { name:"Курица + овощи", kcal:420,p:42,f:8,c:20, img: chickenImg },
- { name:"Веган боул", kcal:360,p:18,f:12,c:45, img: veganImg },
- { name:"Лосось + овощи", kcal:390,p:34,f:26,c:8, img: salmonImg },
- { name:"Фитнес-питание", kcal:450,p:35,f:15,c:30, img: sportImg }
-];
-
-// 3. ПЕРЕМЕННАЯ ДЛЯ ФОНА
-const heroImage = heroImg;
+// Фронтматтер полностью пуст
 ---
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <style>
-    /* ... (ВСЕ СТИЛИ ВАШЕГО CSS ЗДЕСЬ) ... */
-    </style>
+<meta charset="UTF-8">
+<title>FitFood — минимализм и фитнес</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ВСЕ СТИЛИ ВАШЕГО ПРОЕКТА ЗДЕСЬ */
+:root{
+  --bg:#0e1014;
+  --card:#161a20;
+  --accent:#3cff8f;
+  --text:#ffffff;
+  --muted:#9aa0aa;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,sans-serif}
+body{background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* HERO */
+header{
+  min-height:100vh;
+  padding:80px 20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:center;
+  background-size:cover;
+  background-position:center;
+}
+
+h1{font-size:clamp(28px,6vw,48px);margin-bottom:12px}
+p{color:var(--muted);max-width:520px;margin:0 auto 24px}
+
+.btn{
+  background:var(--accent);
+  color:#000;
+  border:none;
+  padding:14px 26px;
+  border-radius:40px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* SECTIONS */
+section{padding:64px 16px;max-width:1100px;margin:auto}
+
+/* CALCULATOR */
+.calc{
+  background:var(--card);
+  border-radius:18px;
+  max-width:420px;
+  margin:auto;
+  padding:24px;
+}
+
+.calc input{
+  width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  background:#0b0e13;
+  border:none;
+  border-radius:10px;
+  color:#fff;
+}
+
+.result{text-align:center;color:var(--accent);font-weight:600}
+
+/* MEALS */
+.meals{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;
+}
+
+.meal{
+  background:var(--card);
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.meal img{
+  width:100%;
+  height:170px;
+  object-fit:cover;
+  cursor:zoom-in;
+  transition:transform .3s;
+}
+
+.meal img:hover{
+  transform:scale(1.03);
+}
+
+.meal div{padding:16px}
+.meal h3{font-size:16px;margin-bottom:6px}
+.meal p{font-size:14px;color:var(--muted)}
+
+footer{text-align:center;padding:40px;color:var(--muted)}
+
+/* LIGHTBOX */
+.lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.lightbox.active{
+  display:flex;
+}
+
+.lightbox img{
+  max-width:95vw;
+  max-height:95vh;
+  object-fit:contain;
+}
+
+.lightbox .close{
+  position:absolute;
+  top:20px;
+  right:24px;
+  font-size:28px;
+  color:#fff;
+  cursor:pointer;
+}
+</style>
 </head>
 
 <body>
 
-<header id="hero" style={`background-image:url(${heroImage})`}> 
+<header id="hero" style="background-image:url(images/hero-free.webp)">
+  <h1>Еда для формы</h1>
+  <p>Минимализм. Фитнес. Контроль калорий.</p>
+  <button class="btn" onclick="scrollToCalc()">Рассчитать калории</button>
 </header>
+
+<section id="calc">
+<h2 style="text-align:center;margin-bottom:20px">🧮 Калькулятор калорий</h2>
+<div class="calc">
+  <input id="w" type="number" placeholder="Вес (кг)">
+  <input id="h" type="number" placeholder="Рост (см)">
+  <input id="a" type="number" placeholder="Возраст">
+  <button class="btn" onclick="calc()">Рассчитать</button>
+  <div class="result" id="res"></div>
+</div>
+</section>
 
 <section>
 <h2 style="text-align:center;margin-bottom:20px">🍽️ Блюда</h2>
+
 <div class="meals" id="meals">
-    {mealsData.map(meal => (
     <div class="meal">
-      <img src={meal.img} onclick={`openLightbox('${meal.img}')`} alt={meal.name}>
-      <div>
-        <h3>{meal.name}</h3>
-        <p>{meal.kcal} ккал • Б:{meal.p} Ж:{meal.f} У:{meal.c}</p>
-      </div>
+    <img src="images/chicken-free.webp" onclick="openLightbox('images/chicken-free.webp')" alt="Курица + овощи">
+    <div>
+      <h3>Курица + овощи</h3>
+      <p>420 ккал • Б:42 Ж:8 У:20</p>
     </div>
-  ))}
+  </div>
+
+  <div class="meal">
+    <img src="images/vegan-free.webp" onclick="openLightbox('images/vegan-free.webp')" alt="Веган боул">
+    <div>
+      <h3>Веган боул</h3>
+      <p>360 ккал • Б:18 Ж:12 У:45</p>
+    </div>
+  </div>
+
+  <div class="meal">
+    <img src="images/salmon-free.webp" onclick="openLightbox('images/salmon-free.webp')" alt="Лосось + овощи">
+    <div>
+      <h3>Лосось + овощи</h3>
+      <p>390 ккал • Б:34 Ж:26 У:8</p>
+    </div>
+  </div>
+
+  <div class="meal">
+    <img src="images/sport-free.webp" onclick="openLightbox('images/sport-free.webp')" alt="Фитнес-питание">
+    <div>
+      <h3>Фитнес-питание</h3>
+      <p>450 ккал • Б:35 Ж:15 У:30</p>
+    </div>
+  </div>
 </div>
 </section>
+
+<footer>© 2025 FitFood</footer>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="close" onclick="closeLightbox()">✕</span>
+  <img id="lightboxImg" alt="Увеличенное изображение блюда">
+</div>
+
+<script>
+/* JS С ЛОГИКОЙ */
+function calc(){
+  const w=+document.getElementById("w").value;
+  const h=+document.getElementById("h").value;
+  const a=+document.getElementById("a").value;
+  const r=document.getElementById("res");
+
+  if(!w||!h||!a){r.innerText="Заполни все поля";return;}
+
+  r.innerText=`≈ ${Math.round((10*w+6.25*h-5*a+5)*1.55)} ккал / день`;
+}
+
+function scrollToCalc(){
+  document.getElementById("calc").scrollIntoView({behavior:"smooth"});
+}
+
+/* LIGHTBOX */
+const lightbox=document.getElementById("lightbox");
+const lightboxImg=document.getElementById("lightboxImg");
+
+function openLightbox(src){
+  lightboxImg.src=src;
+  lightbox.classList.add("active");
+}
+
+function closeLightbox(){
+  lightbox.classList.remove("active");
+  lightboxImg.src="";
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape") closeLightbox();
+});
+</script>
 
 </body>
 </html>
